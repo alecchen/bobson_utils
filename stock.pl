@@ -9,7 +9,6 @@ use warnings;
 use Yahoo::TW::Stock;
 use Data::Dumper;
 
-=pod
 my $q = Yahoo::TW::Stock->new;
 my $result = $q->fetch(2330);
 print Dumper($result);
