@@ -13,26 +13,18 @@ sub fetch {
 	my $self = shift;
 	my $id   = shift;
 
-=pod
-	### fetch
 	my $mech = WWW::Mechanize->new;
 	my $url  = "http://tw.stock.yahoo.com/q/q?s=$id";
 	$mech->get($url);
 	my $content = $mech->content;
 	$content = encode('big5', $content);
-	$content > io('2330.txt');
-=cut
 
-	my $content = io('2330.txt')->slurp;
-
-	### parse
 	my $te = HTML::TableExtract->new;
 	$te->parse($content);
 
 	my @tables = $te->tables;
 	my $date = [split /\s+/, $tables[4]->rows->[0]->[1]]->[1];
 
-	### elements
 	my @values = @{ $tables[5]->rows->[1] }[0..10];
 	my @keys   = qw(股票代號 時間 成交 買進 賣出 漲跌 張數 昨收 開盤 最高 最低);
 
