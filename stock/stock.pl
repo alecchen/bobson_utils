@@ -54,6 +54,4 @@ foreach my $id (@id_list) {
 	my $content = join q{ }, @values;
 	print "$content\n";
     "$content\n" >> io($output);
-    print DumpTree($result);
-    exit;
 }

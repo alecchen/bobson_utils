@@ -1,6 +1,6 @@
 package Yahoo::TW::Stock;
 use Mouse;
-use Encode qw(encode decode);
+use Encode qw(encode decode from_to);
 use WWW::Mechanize;
 use HTML::TableExtract;
 use Smart::Comments;
@@ -18,7 +18,9 @@ sub fetch {
 	my $mech = WWW::Mechanize->new;
 	$mech->get("http://tw.stock.yahoo.com/q/q?s=$id");
 	my $content = $mech->content;
-	$content = encode('big5', $content);
+
+    my $encoding = $self->encoding || 'big5';
+	$content = encode($encoding, $content);
 
 	my $te = HTML::TableExtract->new;
 	$te->parse($content);
@@ -41,7 +43,7 @@ sub fetch {
 	$values[0] = $id;
     $mech->get("http://tw.stock.yahoo.com/q/bc?s=$id");
     my $title = $mech->title;
-	my ($name) =~ /^([^(]+)/;
+	my ($name) = $title =~ /^([^(]+)/;
     from_to($name, 'big5', 'utf8') if $self->encoding eq 'utf8';
 
 	$values[5] = sprintf "%2f", $values[2] - $values[7];
