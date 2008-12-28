@@ -21,6 +21,9 @@ sub new {
 	my $output_label = Wx::StaticText->new($panel, -1, 'Output', [10,100]);
 	my $output_btn   = Wx::Button->new($panel, 1, 'Browser', [100,100]);
 
+	# execute
+	my $exe_btn = Wx::Button->new($panel, 1, 'Run', [100,150]);
+
 	return $self;
 }
 
