@@ -44,7 +44,7 @@ sub fetch {
     $mech->get("http://tw.stock.yahoo.com/q/bc?s=$id");
     my $title = $mech->title;
 	my ($name) = $title =~ /^([^(]+)/;
-    from_to($name, 'big5', 'utf8') if $self->encoding eq 'utf8';
+	$name = $self->encoding eq 'big5' ? encode ('big5', $name) : encode ('utf8', $name);
 
 	$values[5] = sprintf "%2f", $values[2] - $values[7];
 	my %result = map { $keys[$_] => $values[$_] } 0..10;

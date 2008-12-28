@@ -15,7 +15,7 @@ use Data::TreeDumper;
 
 my $input  = 'stock.xls';
 my $output = 'stock.txt';
-my $encoding = 'utf8';
+my $encoding = 'big5';
 unlink $output if -e $output;
 ### need a warning message
 
