@@ -7,15 +7,16 @@ use Smart::Comments;
 use IO::All;
 use version; our $VERSION = qv('0.0.1');
 use Data::TreeDumper;
+use Rubyish::Attribute;
 
+attr_accessor 'encoding';
 
 sub fetch {
 	my $self = shift;
 	my $id   = shift;
 
 	my $mech = WWW::Mechanize->new;
-	my $url  = "http://tw.stock.yahoo.com/q/q?s=$id";
-	$mech->get($url);
+	$mech->get("http://tw.stock.yahoo.com/q/q?s=$id");
 	my $content = $mech->content;
 	$content = encode('big5', $content);
 
@@ -27,14 +28,27 @@ sub fetch {
 
 	my @values = @{ $tables[5]->rows->[1] }[0..10];
 	my @keys   = qw(股票代號 時間 成交 買進 賣出 漲跌 張數 昨收 開盤 最高 最低);
+	my $name_key = '股票名稱';
+	my $date_key = '資料日期';
 
-	$values[0] =~ /(\d+)(\S+)/;
-	$values[0] = $1;
-	my $name   = $2;
+    if ($self->encoding eq 'utf8') {
+	    @keys = map { encode('utf8', decode('big5', $_)) } @keys;
+        from_to($name_key, 'big5', 'utf8');
+        from_to($date_key, 'big5', 'utf8');
+        
+    }
+
+	$values[0] = $id;
+    $mech->get("http://tw.stock.yahoo.com/q/bc?s=$id");
+    my $title = $mech->title;
+	my ($name) =~ /^([^(]+)/;
+    from_to($name, 'big5', 'utf8') if $self->encoding eq 'utf8';
+
 	$values[5] = sprintf "%2f", $values[2] - $values[7];
 	my %result = map { $keys[$_] => $values[$_] } 0..10;
-	$result{'股票名稱'} = $name;
-	$result{'資料日期'} = $date;
+
+	$result{$name_key} = $name;
+	$result{$date_key} = $date;
 
 	return \%result;
 }
