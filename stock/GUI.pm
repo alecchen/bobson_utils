@@ -6,19 +6,22 @@ package GUI;
 use Wx qw(:everything);
 use Wx::Event qw(:everything);
 use base 'Wx::Frame';
+
 use Readonly;
-use version; our $VERSION = qv('0.0.1');
 use Cwd;
 use Rubyish::Attribute;
 
-Readonly my $NAME => 'bobson';
+use version; our $VERSION = qv('0.0.1');
+
+my $name = '股價擷取程式';
+my $title = "$name ($VERSION)";
 
 attr_accessor 'input', 'output';
 
 sub new {
     my ($class, %args) = @_;
     my $self = $class->SUPER::new(
-        undef, -1, $NAME,
+        undef, -1, $title,
         wxDefaultPosition, [600,350],
         wxDEFAULT_FRAME_STYLE|wxNO_FULL_REPAINT_ON_RESIZE|wxCLIP_CHILDREN,
     );
@@ -27,14 +30,19 @@ sub new {
 
     # menu
     my $menubar  = Wx::MenuBar->new;
+
     my $file = Wx::Menu->new;
-    $file->Append( wxID_EXIT, "E&xit" );
+    $file->Append( wxID_EXIT, '離開(&E)' );
+
+    my $option = Wx::Menu->new;
+    $option->Append( wxID_SETUP, '偏好設定(&S)' );
 
     my $help = Wx::Menu->new;
-    $help->Append( wxID_ABOUT, "&About..." );
+    $help->Append( wxID_ABOUT, '關於(&A)' );
 
-    $menubar->Append( $file, "&File" );
-    $menubar->Append( $help, "&Help" );
+    $menubar->Append( $file,   '檔案(&F)' );
+    $menubar->Append( $option, '選項(&O)' );
+    $menubar->Append( $help,   '輔助說明(&H)' );
 
     $self->SetMenuBar( $menubar );
 
@@ -95,6 +103,8 @@ sub new {
     return $self;
 }
 
+# config menubar
+
 sub on_input_change {
     my( $self, $event ) = @_;
     my $input = $event->GetPath;
@@ -109,12 +119,14 @@ sub on_output_change {
     Wx::LogMessage( "Output changed (%s)", $output );
 }
 
+# i18n
+
 sub on_about {   
     my $self = shift;
     my $info = Wx::AboutDialogInfo->new;
-    $info->SetName($NAME);
+    $info->SetName($name);
     $info->SetVersion($VERSION);
-    $info->SetDescription('...');
+    $info->SetDescription('擷取Yahoo股市所提供股價資料供個人投資參考');
     $info->SetCopyright('Copyright (c) 2008 Alec Chen');
     $info->AddDeveloper('Alec Chen <alec@cpan.org>');
     $info->AddArtist('Alec Chen <alec@cpan.org>');
