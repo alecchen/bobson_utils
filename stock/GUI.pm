@@ -22,7 +22,7 @@ sub new {
     my ($class, %args) = @_;
     my $self = $class->SUPER::new(
         undef, -1, $title,
-        wxDefaultPosition, [600,350],
+        [300,200], [600,350],
         wxDEFAULT_FRAME_STYLE|wxNO_FULL_REPAINT_ON_RESIZE|wxCLIP_CHILDREN,
     );
 
@@ -47,6 +47,7 @@ sub new {
     $self->SetMenuBar( $menubar );
 
     EVT_MENU( $self, wxID_ABOUT, \&on_about );
+    #EVT_MENU( $self, wxID_SETUP, \&on_setup );
     EVT_MENU( $self, wxID_EXIT, sub { $self->Close } );
 
     # split window
@@ -64,37 +65,38 @@ sub new {
     my $log = Wx::LogTextCtrl->new( $text );
     Wx::Log::SetActiveTarget( $log );
 
-    # file picker
     my $panel = Wx::Panel->new($split, -1);
 
-    my $input_label  = Wx::StaticText->new($panel, -1, 'Input',  [35,15]);
-    my $output_label = Wx::StaticText->new($panel, -1, 'Output', [20,50]);
-
-    my $input_fp = Wx::FilePickerCtrl->new(
-        $panel, -1, cwd(),
-        'Choose input file name',
-        'Excel spreadsheets (*.xls)|*.xls|All files (*.*)|*.*',
-        [70, 10], [450, 30], wxPB_USE_TEXTCTRL,
-    );
-
-    my $output_fp = Wx::FilePickerCtrl->new(
-        $panel, -1, cwd(),
-        'Choose output file name',
-        'Plain Text (*.txt)|*.txt|All files (*.*)|*.*',
-        [70, 45], [450, 30], wxPB_USE_TEXTCTRL,
-    );
-
-    EVT_FILEPICKER_CHANGED( $self, $input_fp,  \&on_input_change  );
-    EVT_FILEPICKER_CHANGED( $self, $output_fp, \&on_output_change );
+#    # file picker
+#
+#    my $input_label  = Wx::StaticText->new($panel, -1, 'Input',  [35,15]);
+#    my $output_label = Wx::StaticText->new($panel, -1, 'Output', [20,50]);
+#
+#    my $input_fp = Wx::FilePickerCtrl->new(
+#        $panel, -1, cwd(),
+#        'Choose input file name',
+#        'Excel spreadsheets (*.xls)|*.xls|All files (*.*)|*.*',
+#        [70, 10], [450, 30], wxPB_USE_TEXTCTRL,
+#    );
+#
+#    my $output_fp = Wx::FilePickerCtrl->new(
+#        $panel, -1, cwd(),
+#        'Choose output file name',
+#        'Plain Text (*.txt)|*.txt|All files (*.*)|*.*',
+#        [70, 45], [450, 30], wxPB_USE_TEXTCTRL,
+#    );
+#
+#    EVT_FILEPICKER_CHANGED( $self, $input_fp,  \&on_input_change  );
+#    EVT_FILEPICKER_CHANGED( $self, $output_fp, \&on_output_change );
 
     # buttons
-    my $run_btn  = Wx::Button->new( $panel, -1, 'Run',  [180,80] );
-    my $exit_btn = Wx::Button->new( $panel, -1, 'Exit', [280,80] );
+    my $run_btn  = Wx::Button->new( $panel, -1, '執行', [410,5] );
+    my $exit_btn = Wx::Button->new( $panel, -1, '離開', [510,5] );
 
     #EVT_BUTTON( $panel, $run_btn,  \&create_control);
     EVT_BUTTON( $panel, $exit_btn, sub { $self->Close() } );
 
-    $split->SplitHorizontally( $panel, $text, 120 );
+    $split->SplitHorizontally( $text, $panel, 270 );
 
     # misc
     $self->SetIcon( Wx::GetWxPerlIcon() );
@@ -104,7 +106,6 @@ sub new {
 }
 
 # config menubar
-
 sub on_input_change {
     my( $self, $event ) = @_;
     my $input = $event->GetPath;
@@ -120,7 +121,6 @@ sub on_output_change {
 }
 
 # i18n
-
 sub on_about {   
     my $self = shift;
     my $info = Wx::AboutDialogInfo->new;
